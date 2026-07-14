@@ -287,13 +287,27 @@
 
         <!-- CTA / Contact -->
         <section id="contacto" class="contact section">
-            <div class="container contact-container glass-card fade-in-up">
+            <div class="container glass-card fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; padding: 40px;">
                 <div class="contact-info">
                     <h2>¿Listo para llevar tu negocio al próximo nivel?</h2>
-                    <p>Contáctanos hoy y diseñemos juntos el camino digital de tu PyME.</p>
-                    <a href="https://wa.me/5491123493040" target="_blank" class="btn btn-primary btn-large btn-whatsapp">
+                    <p style="margin-bottom: 24px;">Contáctanos hoy y diseñemos juntos el camino digital de tu PyME.</p>
+                    <a href="https://wa.me/5491123493040" target="_blank" class="btn btn-primary btn-large btn-whatsapp" style="margin-bottom: 16px;">
                         <span class="wa-icon"><img src="https://cdn.simpleicons.org/whatsapp/ffffff" width="20" height="20" style="vertical-align: middle; margin-right: 8px;" alt="WhatsApp"></span> Chatea con nosotros
                     </a>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">O escríbenos directamente a: <br><a href="mailto:info@digitalizate.work" style="color: var(--primary); text-decoration: none; font-weight: 600;">info@digitalizate.work</a></p>
+                </div>
+                <div class="contact-form">
+                    <form action="https://formspree.io/f/TU_CODIGO_AQUI" method="POST" class="form-container">
+                        <div class="form-group" style="margin-bottom: 16px;">
+                            <label for="email" style="display: block; margin-bottom: 8px; font-weight: 500;">Tu Correo Electrónico</label>
+                            <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 24px;">
+                            <label for="message" style="display: block; margin-bottom: 8px; font-weight: 500;">Tu Consulta</label>
+                            <textarea id="message" name="message" rows="4" required placeholder="Escribe tu mensaje aquí..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: #fff; font-family: inherit; resize: vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Mensaje</button>
+                    </form>
                 </div>
             </div>
         </section>
@@ -315,6 +329,11 @@
                     <li><a href="#planes">Planes</a></li>
                     <li><a href="#contacto">Contacto</a></li>
                 </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Contacto</h4>
+                <p style="color: var(--text-muted); margin-bottom: 8px;"><a href="mailto:info@digitalizate.work" style="color: var(--text-muted); text-decoration: none;">info@digitalizate.work</a></p>
+                <p style="color: var(--text-muted);"><a href="https://wa.me/5491123493040" style="color: var(--text-muted); text-decoration: none;">+54 9 11 2349-3040</a></p>
             </div>
             <div class="footer-links">
                 <h4>Síguenos</h4>
