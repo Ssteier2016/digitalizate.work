@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -157,6 +157,7 @@
                 <div class="pricing-grid">
                     <!-- Plan 1 -->
                     <div class="pricing-card glass-card fade-in-up">
+                        <img src="flyer1.jpeg" style="width: 100%; border-radius: 8px; margin-bottom: 16px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" alt="Plan Google Local">
                         <div class="plan-header">
                             <h3 class="plan-name">Google Local</h3>
                             <p class="plan-desc">Ideal para comercios de barrio que solo necesitan que los encuentren.</p>
@@ -182,6 +183,7 @@
 
                     <!-- Plan 2 -->
                     <div class="pricing-card glass-card fade-in-up">
+                        <img src="flyer2.jpeg" style="width: 100%; border-radius: 8px; margin-bottom: 16px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" alt="Plan Control Digital">
                         <div class="plan-header">
                             <h3 class="plan-name">Control Digital</h3>
                             <p class="plan-desc">Para negocios que quieren Maps y ordenar sus números de forma fácil.</p>
@@ -209,6 +211,7 @@
                     <!-- Plan 3 (Recommended) -->
                     <div class="pricing-card glass-card popular fade-in-up glow-effect">
                         <div class="popular-badge">Recomendado</div>
+                        <img src="flyer3.jpeg" style="width: 100%; border-radius: 8px; margin-bottom: 16px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" alt="Plan Presencia Web">
                         <div class="plan-header">
                             <h3 class="plan-name">Presencia Web</h3>
                             <p class="plan-desc">Para empresas que quieren dar el salto de confianza en internet 24/7.</p>
@@ -234,6 +237,7 @@
 
                     <!-- Plan 4 -->
                     <div class="pricing-card glass-card fade-in-up">
+                        <img src="flyer4.jpeg" style="width: 100%; border-radius: 8px; margin-bottom: 16px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" alt="Plan Impulso Comercial">
                         <div class="plan-header">
                             <h3 class="plan-name">Impulso Comercial</h3>
                             <p class="plan-desc">El combo perfecto para las PyMEs que quieren vender a nivel profesional.</p>
@@ -320,7 +324,7 @@
                     <span class="logo-text">Digitalízate</span>
                 </div>
                 <p>Tu aliado estratégico para la transformación digital en Argentina.</p>
-                <img src="logonuevo.jpeg" alt="Logo Digitalízate" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-top: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                <img src="logonuevo.jpeg" alt="Logo Digitalízate" style="width: 250px; height: auto; border-radius: 8px; margin-top: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
             </div>
             <div class="footer-links">
                 <h4>Empresa</h4>
@@ -351,6 +355,39 @@
             <p>&copy; 2026 Digitalízate. Todos los derechos reservados.</p>
         </div>
     </footer>
+    
+    <!-- Admin Modal -->
+    <div id="adminModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: var(--bg-card); padding: 32px; border-radius: 12px; border: 1px solid var(--primary); width: 90%; max-width: 400px;">
+            <h3 style="color: var(--primary); margin-bottom: 24px; text-align: center;">Panel de Control - Precios</h3>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px;">Plan 1 (Google Local)</label>
+                <input type="text" id="adminPrice1" style="width: 100%; padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px;">Plan 2 (Control Digital)</label>
+                <input type="text" id="adminPrice2" style="width: 100%; padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px;">Plan 3 (Presencia Web)</label>
+                <input type="text" id="adminPrice3" style="width: 100%; padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px;">Plan 4 (Impulso Comercial)</label>
+                <input type="text" id="adminPrice4" style="width: 100%; padding: 8px; border-radius: 4px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+            </div>
+            
+            <div style="display: flex; gap: 16px;">
+                <button id="adminSaveBtn" class="btn btn-primary" style="flex: 1; padding: 12px;">Guardar</button>
+                <button id="adminCloseBtn" class="btn btn-outline" style="flex: 1; padding: 12px;">Cancelar</button>
+            </div>
+            <p id="adminStatus" style="color: var(--primary); font-size: 14px; text-align: center; margin-top: 16px; display: none;">Guardando...</p>
+        </div>
+    </div>
 
     <script src="js/main.js"></script>
 </body>

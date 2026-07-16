@@ -93,3 +93,128 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+    // 5. Secret Admin Panel & Dynamic Prices
+    const KVDB_URL = 'https://kvdb.io/5x1ToFqcujZEyHwkY2wqb8/prices';
+    let basePrices = [15000, 15000, 55000, 95000]; // Default fallbacks
+    
+    // Fetch prices on load
+    fetch(KVDB_URL)
+        .then(res => {
+            if (res.ok) return res.json();
+            throw new Error('No prices found');
+        })
+        .then(prices => {
+            if (Array.isArray(prices) && prices.length === 4) {
+                basePrices = prices;
+                updateDOMPrices();
+            }
+        })
+        .catch(err => console.log('Using default prices.'));
+
+    function updateDOMPrices() {
+        const priceEls = document.querySelectorAll('.plan-price');
+        priceEls.forEach((el, index) => {
+            if (basePrices[index]) {
+                el.setAttribute('data-monthly', basePrices[index]);
+            }
+        });
+        // Trigger billing switch logic if exists
+        const billingSwitch = document.getElementById('billing-switch');
+        if (billingSwitch) {
+            billingSwitch.dispatchEvent(new Event('change'));
+        } else {
+            // Force update text if no billing switch
+            const dynamicPrices = document.querySelectorAll('.dynamic-price');
+            dynamicPrices.forEach((el, index) => {
+                if (basePrices[index]) {
+                    el.textContent = parseInt(basePrices[index], 10).toLocaleString('es-AR');
+                }
+            });
+        }
+    }
+
+    // Secret Panel Trigger
+    const logoEl = document.querySelector('.header .logo');
+    let clickCount = 0;
+    let clickTimer = null;
+    
+    if (logoEl) {
+        logoEl.addEventListener('click', (e) => {
+            clickCount++;
+            if (clickTimer) clearTimeout(clickTimer);
+            
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+            }, 5000);
+            
+            if (clickCount >= 7) {
+                clickCount = 0;
+                const pwd = prompt('Clave de acceso:');
+                if (pwd === '0803') {
+                    openAdminModal();
+                } else if (pwd !== null) {
+                    alert('Clave incorrecta');
+                }
+            }
+        });
+    }
+    
+    const adminModal = document.getElementById('adminModal');
+    const btnSave = document.getElementById('adminSaveBtn');
+    const btnClose = document.getElementById('adminCloseBtn');
+    const statusText = document.getElementById('adminStatus');
+    
+    function openAdminModal() {
+        if (!adminModal) return;
+        document.getElementById('adminPrice1').value = basePrices[0];
+        document.getElementById('adminPrice2').value = basePrices[1];
+        document.getElementById('adminPrice3').value = basePrices[2];
+        document.getElementById('adminPrice4').value = basePrices[3];
+        adminModal.style.display = 'flex';
+        statusText.style.display = 'none';
+    }
+    
+    if (btnClose) {
+        btnClose.addEventListener('click', () => {
+            adminModal.style.display = 'none';
+        });
+    }
+    
+    if (btnSave) {
+        btnSave.addEventListener('click', () => {
+            const p1 = parseInt(document.getElementById('adminPrice1').value, 10);
+            const p2 = parseInt(document.getElementById('adminPrice2').value, 10);
+            const p3 = parseInt(document.getElementById('adminPrice3').value, 10);
+            const p4 = parseInt(document.getElementById('adminPrice4').value, 10);
+            
+            if (isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(p4)) {
+                alert('Por favor, ingresa solo números.');
+                return;
+            }
+            
+            const newPrices = [p1, p2, p3, p4];
+            statusText.textContent = 'Guardando...';
+            statusText.style.display = 'block';
+            
+            fetch(KVDB_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPrices)
+            })
+            .then(res => {
+                if(res.ok) {
+                    statusText.textContent = '¡Precios actualizados!';
+                    basePrices = newPrices;
+                    updateDOMPrices();
+                    setTimeout(() => adminModal.style.display = 'none', 1500);
+                } else {
+                    throw new Error('Failed to save');
+                }
+            })
+            .catch(err => {
+                statusText.textContent = 'Error al guardar. Intenta de nuevo.';
+            });
+        });
+    }
+
