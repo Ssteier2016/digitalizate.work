@@ -1,69 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Intersection Observer for Scroll Animations
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                observer.unobserve(entry.target); // Run animation only once
+                observer.unobserve(entry.target); 
             }
         });
     }, observerOptions);
 
-    const animatedElements = document.querySelectorAll('.fade-in-up, .fade-in-right');
-    animatedElements.forEach(el => observer.observe(el));
-
-    // 2. Pricing Toggle Logic
-    const billingSwitch = document.getElementById('billing-switch');
-    const dynamicPrices = document.querySelectorAll('.dynamic-price');
-    const labelMonthly = document.getElementById('label-monthly');
-    const labelAnnual = document.getElementById('label-annual');
-    
-    // Discount factor (15% off)
-    const discount = 0.85;
-
-    if (billingSwitch) {
-        billingSwitch.addEventListener('change', (e) => {
-            const isAnnual = e.target.checked;
-            
-            // Toggle active labels
-            if (isAnnual) {
-                labelMonthly.classList.remove('active');
-                labelAnnual.classList.add('active');
-            } else {
-                labelAnnual.classList.remove('active');
-                labelMonthly.classList.add('active');
-            }
-
-            // Update prices
-            dynamicPrices.forEach(priceEl => {
-                const basePrice = parseInt(priceEl.parentElement.getAttribute('data-monthly'), 10);
-                
-                if (isAnnual) {
-                    // Apply discount
-                    const discountedPrice = basePrice * discount;
-                    // Format with thousands separator
-                    priceEl.textContent = discountedPrice.toLocaleString('es-AR');
-                } else {
-                    // Restore original price
-                    priceEl.textContent = basePrice.toLocaleString('es-AR');
-                }
-            });
-        });
-    }
+    const observeElements = () => {
+        const animatedElements = document.querySelectorAll('.fade-in-up, .fade-in-right');
+        animatedElements.forEach(el => observer.observe(el));
+    };
+    observeElements();
 
     // 3. Mobile Menu Toggle
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navList = document.querySelector('.nav-list');
-    
     if (mobileMenuBtn && navList) {
         mobileMenuBtn.addEventListener('click', () => {
-            // Simple toggle for mobile nav
             if (navList.style.display === 'flex') {
                 navList.style.display = 'none';
             } else {
@@ -92,129 +49,226 @@ document.addEventListener('DOMContentLoaded', () => {
             header.style.boxShadow = 'none';
         }
     });
-});
 
-    // 5. Secret Admin Panel & Dynamic Prices
-    const KVDB_URL = 'https://kvdb.io/5x1ToFqcujZEyHwkY2wqb8/prices';
-    let basePrices = [15000, 15000, 55000, 95000]; // Default fallbacks
+    // ==========================================
+    // DYNAMIC CMS LOGIC (KVDB)
+    // ==========================================
+    const KVDB_URL = 'https://kvdb.io/5x1ToFqcujZEyHwkY2wqb8/plans';
     
-    // Fetch prices on load
+    let defaultPlans = [
+        {
+            title: "Google Local", desc: "Ideal para comercios de barrio que solo necesitan que los encuentren.", image: "flyer1.jpeg",
+            priceType: "Pago único", price: "35000", period: " ARS", features: "Alta en Google Maps\nOptimización completa de ficha\nConfig. de horarios y fotos\nDatos de contacto precisos", isRecommended: false
+        },
+        {
+            title: "Control Digital", desc: "Para negocios que quieren Maps y ordenar sus números de forma fácil.", image: "flyer2.jpeg",
+            priceType: "Suscripción Sistema", price: "15000", period: " / mes", features: "Todo Google Local\nSistema de Control de Ventas\nGestión de gastos diarios\nCálculo de ganancias autom.", isRecommended: false
+        },
+        {
+            title: "Presencia Web", desc: "Para empresas que quieren dar el salto de confianza en internet 24/7.", image: "flyer3.jpeg",
+            priceType: "Suscripción Integral (Inc. Hosting)", price: "55000", period: " / mes", features: "Todo Control Digital\nPágina Web Profesional\nHosting y Soporte incluido\nOptimización para celulares (Responsive)", isRecommended: true
+        },
+        {
+            title: "Impulso Comercial", desc: "El combo perfecto para las PyMEs que quieren vender a nivel profesional.", image: "flyer4.jpeg",
+            priceType: "Suscripción Integral", price: "95000", period: " / mes", features: "Todo Presencia Web\nConfiguración Redes Business\nInstagram Optimizado\nWhatsApp Automático (Catálogo/Bots)", isRecommended: false
+        }
+    ];
+
+    let currentPlans = [...defaultPlans];
+    let isAnnualBilling = false;
+    const discount = 0.85;
+
+    // Fetch from DB
     fetch(KVDB_URL)
         .then(res => {
             if (res.ok) return res.json();
-            throw new Error('No prices found');
+            throw new Error('Not found');
         })
-        .then(prices => {
-            if (Array.isArray(prices) && prices.length === 4) {
-                basePrices = prices;
-                updateDOMPrices();
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                currentPlans = data;
+                renderPlans();
+                buildAdminPanel();
             }
         })
-        .catch(err => console.log('Using default prices.'));
-
-    function updateDOMPrices() {
-        const priceEls = document.querySelectorAll('.plan-price');
-        priceEls.forEach((el, index) => {
-            if (basePrices[index]) {
-                el.setAttribute('data-monthly', basePrices[index]);
-            }
+        .catch(() => {
+            console.log('Using default plans structure.');
+            renderPlans();
+            buildAdminPanel();
         });
-        // Trigger billing switch logic if exists
-        const billingSwitch = document.getElementById('billing-switch');
-        if (billingSwitch) {
-            billingSwitch.dispatchEvent(new Event('change'));
-        } else {
-            // Force update text if no billing switch
-            const dynamicPrices = document.querySelectorAll('.dynamic-price');
-            dynamicPrices.forEach((el, index) => {
-                if (basePrices[index]) {
-                    el.textContent = parseInt(basePrices[index], 10).toLocaleString('es-AR');
-                }
-            });
-        }
+
+    function renderPlans() {
+        const container = document.getElementById('dynamic-pricing-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        currentPlans.forEach((plan, i) => {
+            const delay = i * 100;
+            const recClass = plan.isRecommended ? 'popular glow-effect' : '';
+            const recBadge = plan.isRecommended ? '<div class="popular-badge">Recomendado</div>' : '';
+            
+            const imageHtml = plan.image ? `<img src="${plan.image}" style="width: 100%; border-radius: 8px; margin-bottom: 16px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3);" alt="${plan.title}">` : '';
+            
+            const featureList = plan.features.split('\n').map(f => `<li><span class="check">✓</span> ${f}</li>`).join('');
+            
+            // Calc price based on toggle
+            let displayPrice = parseInt(plan.price, 10);
+            if (!isNaN(displayPrice) && isAnnualBilling && plan.period.includes('mes')) {
+                displayPrice = displayPrice * discount;
+            }
+            const priceStr = isNaN(displayPrice) ? plan.price : displayPrice.toLocaleString('es-AR');
+            
+            const html = `
+                <div class="pricing-card glass-card fade-in-up ${recClass}" style="transition-delay: ${delay}ms;">
+                    ${recBadge}
+                    ${imageHtml}
+                    <div class="plan-header">
+                        <h3 class="plan-name">${plan.title}</h3>
+                        <p class="plan-desc">${plan.desc}</p>
+                    </div>
+                    <div class="plan-price-wrapper">
+                        <div class="price-type">${plan.priceType}</div>
+                        <div class="plan-price">
+                            <span class="currency">$</span>
+                            <span class="amount dynamic-price">${priceStr}</span>
+                            <span class="period">${plan.period}</span>
+                        </div>
+                    </div>
+                    <ul class="plan-features">
+                        ${featureList}
+                    </ul>
+                    <div class="plan-cta">
+                        <a href="#contacto" class="btn ${plan.isRecommended ? 'btn-primary' : 'btn-outline'} btn-full">Elegir Plan</a>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+        observeElements();
     }
 
-    // Secret Panel Trigger
+    // Billing toggle logic
+    const billingSwitch = document.getElementById('billing-switch');
+    if (billingSwitch) {
+        billingSwitch.addEventListener('change', (e) => {
+            isAnnualBilling = e.target.checked;
+            document.getElementById('label-monthly').classList.toggle('active', !isAnnualBilling);
+            document.getElementById('label-annual').classList.toggle('active', isAnnualBilling);
+            renderPlans();
+        });
+    }
+
+    // ==========================================
+    // ADMIN PANEL LOGIC
+    // ==========================================
     const logoEl = document.querySelector('.header .logo');
     let clickCount = 0;
     let clickTimer = null;
+    const adminModal = document.getElementById('adminModal');
     
     if (logoEl) {
-        logoEl.addEventListener('click', (e) => {
+        logoEl.addEventListener('click', () => {
             clickCount++;
             if (clickTimer) clearTimeout(clickTimer);
-            
-            clickTimer = setTimeout(() => {
-                clickCount = 0;
-            }, 5000);
+            clickTimer = setTimeout(() => clickCount = 0, 5000);
             
             if (clickCount >= 7) {
                 clickCount = 0;
-                const pwd = prompt('Clave de acceso:');
-                if (pwd === '0803') {
-                    openAdminModal();
-                } else if (pwd !== null) {
-                    alert('Clave incorrecta');
+                if (prompt('Clave de acceso:') === '0803') {
+                    buildAdminPanel();
+                    adminModal.style.display = 'flex';
                 }
             }
         });
     }
     
-    const adminModal = document.getElementById('adminModal');
-    const btnSave = document.getElementById('adminSaveBtn');
-    const btnClose = document.getElementById('adminCloseBtn');
-    const statusText = document.getElementById('adminStatus');
-    
-    function openAdminModal() {
-        if (!adminModal) return;
-        document.getElementById('adminPrice1').value = basePrices[0];
-        document.getElementById('adminPrice2').value = basePrices[1];
-        document.getElementById('adminPrice3').value = basePrices[2];
-        document.getElementById('adminPrice4').value = basePrices[3];
-        adminModal.style.display = 'flex';
-        statusText.style.display = 'none';
+    function buildAdminPanel() {
+        const container = document.getElementById('adminPlansContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        
+        currentPlans.forEach((plan, i) => {
+            container.innerHTML += `
+                <div style="background: rgba(255,255,255,0.05); padding: 16px; margin-bottom: 16px; border-radius: 8px;">
+                    <h4 style="margin-bottom: 12px; color: var(--primary);">Plan ${i + 1}</h4>
+                    <input type="text" id="admin_title_${i}" value="${plan.title}" placeholder="Título" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                    <input type="text" id="admin_desc_${i}" value="${plan.desc}" placeholder="Descripción" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                    <input type="text" id="admin_image_${i}" value="${plan.image}" placeholder="Imagen (ej. flyer1.jpeg) o dejar vacío" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" id="admin_price_${i}" value="${plan.price}" placeholder="Precio (ej. 35000)" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                        <input type="text" id="admin_period_${i}" value="${plan.period}" placeholder="Periodo (ej. / mes)" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                    </div>
+                    <textarea id="admin_features_${i}" rows="3" placeholder="Características (una por línea)" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">${plan.features}</textarea>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                        <input type="checkbox" id="admin_rec_${i}" ${plan.isRecommended ? 'checked' : ''}> Es recomendado (destacado)
+                    </label>
+                    <button class="btn btn-outline" style="margin-top: 12px; padding: 6px 12px; font-size: 12px; border-color: red; color: red;" onclick="removePlan(${i})">Eliminar Plan</button>
+                </div>
+            `;
+        });
     }
-    
-    if (btnClose) {
-        btnClose.addEventListener('click', () => {
-            adminModal.style.display = 'none';
+
+    window.removePlan = function(index) {
+        if(confirm('¿Seguro que deseas eliminar este plan?')) {
+            currentPlans.splice(index, 1);
+            buildAdminPanel();
+        }
+    }
+
+    const btnAdd = document.getElementById('adminAddPlanBtn');
+    if(btnAdd) {
+        btnAdd.addEventListener('click', () => {
+            currentPlans.push({
+                title: "Nuevo Plan", desc: "Descripción corta", image: "",
+                priceType: "Suscripción", price: "0", period: " / mes", features: "Característica 1\nCaracterística 2", isRecommended: false
+            });
+            buildAdminPanel();
         });
     }
     
+    const btnSave = document.getElementById('adminSaveBtn');
     if (btnSave) {
         btnSave.addEventListener('click', () => {
-            const p1 = parseInt(document.getElementById('adminPrice1').value, 10);
-            const p2 = parseInt(document.getElementById('adminPrice2').value, 10);
-            const p3 = parseInt(document.getElementById('adminPrice3').value, 10);
-            const p4 = parseInt(document.getElementById('adminPrice4').value, 10);
-            
-            if (isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(p4)) {
-                alert('Por favor, ingresa solo n�meros.');
-                return;
+            // Rebuild currentPlans from DOM
+            const newPlans = [];
+            for (let i = 0; i < currentPlans.length; i++) {
+                const elTitle = document.getElementById(`admin_title_${i}`);
+                if(!elTitle) continue; // safety check
+                
+                newPlans.push({
+                    title: elTitle.value,
+                    desc: document.getElementById(`admin_desc_${i}`).value,
+                    image: document.getElementById(`admin_image_${i}`).value,
+                    priceType: currentPlans[i].priceType, // Keep original or make it editable if needed
+                    price: document.getElementById(`admin_price_${i}`).value,
+                    period: document.getElementById(`admin_period_${i}`).value,
+                    features: document.getElementById(`admin_features_${i}`).value,
+                    isRecommended: document.getElementById(`admin_rec_${i}`).checked
+                });
             }
             
-            const newPrices = [p1, p2, p3, p4];
+            const statusText = document.getElementById('adminStatus');
             statusText.textContent = 'Guardando...';
             statusText.style.display = 'block';
             
             fetch(KVDB_URL, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newPrices)
+                body: JSON.stringify(newPlans)
             })
             .then(res => {
                 if(res.ok) {
-                    statusText.textContent = '�Precios actualizados!';
-                    basePrices = newPrices;
-                    updateDOMPrices();
+                    statusText.textContent = '¡Planes actualizados!';
+                    currentPlans = newPlans;
+                    renderPlans();
                     setTimeout(() => adminModal.style.display = 'none', 1500);
-                } else {
-                    throw new Error('Failed to save');
-                }
+                } else throw new Error();
             })
-            .catch(err => {
-                statusText.textContent = 'Error al guardar. Intenta de nuevo.';
-            });
+            .catch(() => statusText.textContent = 'Error al guardar.');
         });
     }
 
+    const btnClose = document.getElementById('adminCloseBtn');
+    if (btnClose) btnClose.addEventListener('click', () => adminModal.style.display = 'none');
+});
