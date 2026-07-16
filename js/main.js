@@ -57,19 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let defaultPlans = [
         {
-            title: "Google Local", desc: "Ideal para comercios de barrio que solo necesitan que los encuentren.", image: "flyer1.jpeg",
+            title: "Google Local", desc: "Ideal para comercios de barrio que solo necesitan que los encuentren.", image: "",
             priceType: "Pago único", price: "35000", period: " ARS", features: "Alta en Google Maps\nOptimización completa de ficha\nConfig. de horarios y fotos\nDatos de contacto precisos", isRecommended: false
         },
         {
-            title: "Control Digital", desc: "Para negocios que quieren Maps y ordenar sus números de forma fácil.", image: "flyer2.jpeg",
+            title: "Control Digital", desc: "Para negocios que quieren Maps y ordenar sus números de forma fácil.", image: "",
             priceType: "Suscripción Sistema", price: "15000", period: " / mes", features: "Todo Google Local\nSistema de Control de Ventas\nGestión de gastos diarios\nCálculo de ganancias autom.", isRecommended: false
         },
         {
-            title: "Presencia Web", desc: "Para empresas que quieren dar el salto de confianza en internet 24/7.", image: "flyer3.jpeg",
+            title: "Presencia Web", desc: "Para empresas que quieren dar el salto de confianza en internet 24/7.", image: "",
             priceType: "Suscripción Integral (Inc. Hosting)", price: "55000", period: " / mes", features: "Todo Control Digital\nPágina Web Profesional\nHosting y Soporte incluido\nOptimización para celulares (Responsive)", isRecommended: true
         },
         {
-            title: "Impulso Comercial", desc: "El combo perfecto para las PyMEs que quieren vender a nivel profesional.", image: "flyer4.jpeg",
+            title: "Impulso Comercial", desc: "El combo perfecto para las PyMEs que quieren vender a nivel profesional.", image: "",
             priceType: "Suscripción Integral", price: "95000", period: " / mes", features: "Todo Presencia Web\nConfiguración Redes Business\nInstagram Optimizado\nWhatsApp Automático (Catálogo/Bots)", isRecommended: false
         }
     ];
