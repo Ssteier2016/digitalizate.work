@@ -194,7 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h4 style="margin-bottom: 12px; color: var(--primary);">Plan ${i + 1}</h4>
                     <input type="text" id="admin_title_${i}" value="${plan.title}" placeholder="Título" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
                     <input type="text" id="admin_desc_${i}" value="${plan.desc}" placeholder="Descripción" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
-                    <input type="text" id="admin_image_${i}" value="${plan.image}" placeholder="Imagen (ej. flyer1.jpeg) o dejar vacío" style="width: 100%; margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" id="admin_image_${i}" value="${plan.image}" placeholder="Imagen (ej. flyer1.jpeg) o dejar vacío" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
+                        <button class="btn btn-outline" style="padding: 8px; font-size: 12px; border-color: red; color: red;" onclick="document.getElementById('admin_image_${i}').value=''">Quitar Imagen</button>
+                    </div>
                     <div style="display: flex; gap: 8px; margin-bottom: 8px;">
                         <input type="text" id="admin_price_${i}" value="${plan.price}" placeholder="Precio (ej. 35000)" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
                         <input type="text" id="admin_period_${i}" value="${plan.period}" placeholder="Periodo (ej. / mes)" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid #444; color: white;">
