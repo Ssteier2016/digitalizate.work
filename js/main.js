@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // DYNAMIC CMS LOGIC (KVDB)
     // ==========================================
-    const KVDB_URL = 'https://kvdb.io/5x1ToFqcujZEyHwkY2wqb8/plans';
+    
     
     let defaultPlans = [
         {
@@ -79,23 +79,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const discount = 0.85;
 
     // Fetch from DB
-    fetch(KVDB_URL)
-        .then(res => {
-            if (res.ok) return res.json();
-            throw new Error('Not found');
-        })
-        .then(data => {
-            if (Array.isArray(data) && data.length > 0) {
-                currentPlans = data;
-                renderPlans();
-                buildAdminPanel();
+    
+    try {
+        const localData = localStorage.getItem('digitalizate_plans');
+        if (localData) {
+            const parsed = JSON.parse(localData);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                currentPlans = parsed;
             }
-        })
-        .catch(() => {
-            console.log('Using default plans structure.');
-            renderPlans();
-            buildAdminPanel();
-        });
+        }
+    } catch(e) {
+        console.error('Error reading localStorage', e);
+    }
+    renderPlans();
+    buildAdminPanel();
+
 
     function renderPlans() {
         const container = document.getElementById('dynamic-pricing-container');
@@ -255,21 +253,17 @@ document.addEventListener('DOMContentLoaded', () => {
             statusText.textContent = 'Guardando...';
             statusText.style.display = 'block';
             
-            fetch(KVDB_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newPlans)
-            })
-            .then(res => {
-                if(res.ok) {
-                    statusText.textContent = '¡Planes actualizados!';
-                    currentPlans = newPlans;
-                    renderPlans();
-                    setTimeout(() => adminModal.style.display = 'none', 1500);
-                } else throw new Error();
-            })
-            .catch(() => statusText.textContent = 'Error al guardar.');
-        });
+            
+            try {
+                localStorage.setItem('digitalizate_plans', JSON.stringify(newPlans));
+                statusText.textContent = '¡Planes actualizados localmente!';
+                currentPlans = newPlans;
+                renderPlans();
+                setTimeout(() => adminModal.style.display = 'none', 1500);
+            } catch(e) {
+                statusText.textContent = 'Error al guardar.';
+            }
+
     }
 
     const btnClose = document.getElementById('adminCloseBtn');
