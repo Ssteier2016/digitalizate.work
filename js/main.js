@@ -253,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
             statusText.textContent = 'Guardando...';
             statusText.style.display = 'block';
             
-            
             try {
                 localStorage.setItem('digitalizate_plans', JSON.stringify(newPlans));
                 statusText.textContent = '¡Planes actualizados localmente!';
@@ -263,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch(e) {
                 statusText.textContent = 'Error al guardar.';
             }
-
+        });
     }
 
     const btnClose = document.getElementById('adminCloseBtn');
